@@ -4,7 +4,12 @@ import { useEffect, useState, useRef, Suspense } from 'react'
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion'
 import { Code, Cpu, Globe, Twitter, Github, ChevronRight, Menu, X } from 'lucide-react'
 import Link from "next/link"
-import SplineScene from '@/components/SplineScene'
+import dynamic from 'next/dynamic'
+
+// Dynamically import Spline with no SSR
+const Spline = dynamic(() => import('@splinetool/react-spline'), {
+  ssr: false,
+})
 
 function ScrollProgress() {
   const { scrollYProgress } = useScroll()
@@ -557,7 +562,7 @@ export default function Home() {
     <main className="relative min-h-screen overflow-hidden text-white">
       <div className="fixed inset-0 z-0">
         <Suspense fallback={<LoadingState />}>
-          <SplineScene scene="https://prod.spline.design/RwUJ5jWNVwbWpBjn/scene.splinecode" />
+          <Spline scene="https://prod.spline.design/RwUJ5jWNVwbWpBjn/scene.splinecode" />
         </Suspense>
       </div>
       <div className="relative z-10">
