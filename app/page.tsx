@@ -7,12 +7,48 @@ import Link from "next/link"
 import dynamic from 'next/dynamic'
 
 // Dynamically import Spline with no SSR
-const Spline = dynamic(() => import('@splinetool/react-spline').then(mod => {
-  return mod.default
-}), {
-  ssr: false,
-  loading: () => <div className="w-full h-full bg-black/50 backdrop-blur-sm rounded-lg" />
-})
+const Spline = dynamic(
+  () => import('@splinetool/react-spline')
+    .then(mod => {
+      const SplineComponent = mod.default;
+      return function SplineWrapper(props: any) {
+        const [isLoading, setIsLoading] = useState(true);
+        const [error, setError] = useState<string | null>(null);
+
+        const onLoad = () => {
+          setIsLoading(false);
+        };
+
+        const onError = (e: Error) => {
+          setError(e.message);
+          setIsLoading(false);
+        };
+
+        if (error) {
+          return <div className="w-full h-full bg-black/80 backdrop-blur-sm rounded-lg flex items-center justify-center text-white/50">Failed to load 3D scene</div>;
+        }
+
+        return (
+          <div className="relative w-full h-full">
+            {isLoading && (
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                <div className="animate-pulse">Loading 3D scene...</div>
+              </div>
+            )}
+            <SplineComponent {...props} onLoad={onLoad} onError={onError} />
+          </div>
+        );
+      };
+    }),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full bg-black/50 backdrop-blur-sm rounded-lg flex items-center justify-center">
+        <div className="animate-pulse">Initializing 3D scene...</div>
+      </div>
+    )
+  }
+)
 
 function ScrollProgress() {
   const { scrollYProgress } = useScroll()
