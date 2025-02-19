@@ -7,8 +7,11 @@ import Link from "next/link"
 import dynamic from 'next/dynamic'
 
 // Dynamically import Spline with no SSR
-const Spline = dynamic(() => import('@splinetool/react-spline'), {
+const Spline = dynamic(() => import('@splinetool/react-spline').then(mod => {
+  return mod.default
+}), {
   ssr: false,
+  loading: () => <div className="w-full h-full bg-black/50 backdrop-blur-sm rounded-lg" />
 })
 
 function ScrollProgress() {
